@@ -31,7 +31,7 @@
         </dependency>
         <dependency>
             <groupId>com.alibaba.csp</groupId>
-            <artifactId>sentinel-transport-simple-http</artifactId>
+            <artifactId>sentinel-transport-netty-http</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -39,7 +39,76 @@
             <artifactId>sentinel-parameter-flow-control</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-dashboard-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
+        </dependency>
 
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+		<dependency>
+			<groupId>io.github.waveng.sentinel</groupId>
+			<artifactId>sentinel-spring-boot-starter</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.alibaba.csp</groupId>
+					<artifactId>
+						sentinel-datasource-extension
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.alibaba.csp</groupId>
+					<artifactId>sentinel-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.alibaba.csp</groupId>
+					<artifactId>sentinel-dubbo-adapter</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.alibaba.csp</groupId>
+					<artifactId>sentinel-transport-common</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.alibaba.csp</groupId>
+					<artifactId>
+						sentinel-transport-netty-http
+					</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>${spring.boot.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -63,11 +132,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.14</version>
-        </dependency>
 
         <dependency>
             <groupId>commons-lang</groupId>

@@ -15,46 +15,19 @@
  */
 package com.taobao.csp.sentinel.dashboard.client;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
-import java.util.ServiceLoader;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.entity.ContentType;
-import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.csp.sentinel.command.vo.NodeVo;
-import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRule;
-import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
-import com.alibaba.csp.sentinel.slots.system.SystemRule;
-import com.alibaba.csp.sentinel.util.AssertUtil;
-import com.alibaba.csp.sentinel.util.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.taobao.csp.sentinel.dashboard.client.spi.DefaultSentinelApiClient;
-import com.taobao.csp.sentinel.dashboard.client.spi.SentinelApiClientSpi;
+import com.taobao.csp.sentinel.dashboard.client.spi.SentinelClientDataSource;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.AuthorityRuleEntity;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.DegradeRuleEntity;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.FlowRuleEntity;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.ParamFlowRuleEntity;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.SystemRuleEntity;
-import com.taobao.csp.sentinel.dashboard.util.RuleUtils;
 
 /**
  * Communicate with Sentinel client.
@@ -64,28 +37,13 @@ import com.taobao.csp.sentinel.dashboard.util.RuleUtils;
 @Component
 public class SentinelApiClient {
 
-    private static Logger logger = LoggerFactory.getLogger(SentinelApiClient.class);
 
-
-    private SentinelApiClientSpi sentinelApiClientSpi;
+    @Autowired
+    private SentinelClientDataSource sentinelClientDataSource;
     
-    public SentinelApiClient() {
-        ServiceLoader<SentinelApiClientSpi> loader = ServiceLoader.load(SentinelApiClientSpi.class);
-        Iterator<SentinelApiClientSpi> iterator = loader.iterator();
-        SentinelApiClientSpi spi = null;
-        if (iterator.hasNext()) {
-            spi = iterator.next();
-            
-        }
-        
-        if(spi == null){
-            spi = new DefaultSentinelApiClient();   
-        }
-        sentinelApiClientSpi = spi;
-    }
 
     public List<NodeVo> fetchResourceOfMachine(String ip, int port, String type) {
-        return sentinelApiClientSpi.fetchResourceOfMachine(ip, port, type);
+        return sentinelClientDataSource.fetchResourceOfMachine(ip, port, type);
     }
 
     /**
@@ -97,19 +55,19 @@ public class SentinelApiClient {
      * @return
      */
     public List<NodeVo> fetchClusterNodeOfMachine(String ip, int port, boolean includeZero) {
-        return sentinelApiClientSpi.fetchClusterNodeOfMachine(ip, port, includeZero);
+        return sentinelClientDataSource.fetchClusterNodeOfMachine(ip, port, includeZero);
     }
 
     public List<FlowRuleEntity> fetchFlowRuleOfMachine(String app, String ip, int port) {
-        return sentinelApiClientSpi.fetchFlowRuleOfMachine(app, ip, port);
+        return sentinelClientDataSource.fetchFlowRuleOfMachine(app, ip, port);
     }
 
     public List<DegradeRuleEntity> fetchDegradeRuleOfMachine(String app, String ip, int port) {
-        return sentinelApiClientSpi.fetchDegradeRuleOfMachine(app, ip, port);
+        return sentinelClientDataSource.fetchDegradeRuleOfMachine(app, ip, port);
     }
 
     public List<SystemRuleEntity> fetchSystemRuleOfMachine(String app, String ip, int port) {
-        return sentinelApiClientSpi.fetchSystemRuleOfMachine(app, ip, port);
+        return sentinelClientDataSource.fetchSystemRuleOfMachine(app, ip, port);
     }
 
     /**
@@ -122,7 +80,7 @@ public class SentinelApiClient {
      * @since 0.2.1
      */
     public CompletableFuture<List<ParamFlowRuleEntity>> fetchParamFlowRulesOfMachine(String app, String ip, int port) {
-        return sentinelApiClientSpi.fetchParamFlowRulesOfMachine(app, ip, port);
+        return sentinelClientDataSource.fetchParamFlowRulesOfMachine(app, ip, port);
     }
 
     /**
@@ -135,7 +93,7 @@ public class SentinelApiClient {
      * @since 0.2.1
      */
     public List<AuthorityRuleEntity> fetchAuthorityRulesOfMachine(String app, String ip, int port) {
-        return sentinelApiClientSpi.fetchAuthorityRulesOfMachine(app, ip, port);
+        return sentinelClientDataSource.fetchAuthorityRulesOfMachine(app, ip, port);
     }
 
     /**
@@ -149,7 +107,7 @@ public class SentinelApiClient {
      * @return whether successfully set the rules.
      */
     public boolean setFlowRuleOfMachine(String app, String ip, int port, List<FlowRuleEntity> rules) {
-        return sentinelApiClientSpi.setFlowRuleOfMachine(app, ip, port, rules);
+        return sentinelClientDataSource.setFlowRuleOfMachine(app, ip, port, rules);
     }
 
     /**
@@ -163,7 +121,7 @@ public class SentinelApiClient {
      * @return whether successfully set the rules.
      */
     public boolean setDegradeRuleOfMachine(String app, String ip, int port, List<DegradeRuleEntity> rules) {
-        return sentinelApiClientSpi.setDegradeRuleOfMachine(app, ip, port, rules);
+        return sentinelClientDataSource.setDegradeRuleOfMachine(app, ip, port, rules);
     }
 
     /**
@@ -177,11 +135,11 @@ public class SentinelApiClient {
      * @return whether successfully set the rules.
      */
     public boolean setSystemRuleOfMachine(String app, String ip, int port, List<SystemRuleEntity> rules) {
-        return sentinelApiClientSpi.setSystemRuleOfMachine(app, ip, port, rules);
+        return sentinelClientDataSource.setSystemRuleOfMachine(app, ip, port, rules);
     }
 
     public CompletableFuture<Void> setParamFlowRuleOfMachine(String app, String ip, int port, List<ParamFlowRuleEntity> rules) {
-        return sentinelApiClientSpi.setParamFlowRuleOfMachine(app, ip, port, rules);
+        return sentinelClientDataSource.setParamFlowRuleOfMachine(app, ip, port, rules);
     }
 
    

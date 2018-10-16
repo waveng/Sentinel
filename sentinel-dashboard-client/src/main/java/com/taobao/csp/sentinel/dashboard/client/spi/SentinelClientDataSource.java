@@ -10,7 +10,7 @@ import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.FlowRuleEntity;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.ParamFlowRuleEntity;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.SystemRuleEntity;
 
-public interface SentinelApiClientSpi {
+public interface SentinelClientDataSource {
     
     public List<NodeVo> fetchResourceOfMachine(String ip, int port, String type);
 

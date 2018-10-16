@@ -62,9 +62,9 @@ import com.taobao.csp.sentinel.dashboard.util.RuleUtils;
  *
  * @author leyou
  */
-public class DefaultSentinelApiClient implements SentinelApiClientSpi {
+public class SentinelApiClientDataSource implements SentinelClientDataSource {
 
-    private static Logger logger = LoggerFactory.getLogger(DefaultSentinelApiClient.class);
+    private static Logger logger = LoggerFactory.getLogger(SentinelApiClientDataSource.class);
 
     private static final Charset DEFAULT_CHARSET = Charset.forName(SentinelConfig.charset());
 
@@ -84,7 +84,7 @@ public class DefaultSentinelApiClient implements SentinelApiClientSpi {
 
     private final boolean enableHttps = false;
 
-    public DefaultSentinelApiClient() {
+    public SentinelApiClientDataSource() {
         IOReactorConfig ioConfig = IOReactorConfig.custom().setConnectTimeout(3000).setSoTimeout(3000)
             .setIoThreadCount(Runtime.getRuntime().availableProcessors() * 2).build();
         httpClient = HttpAsyncClients.custom().setRedirectStrategy(new DefaultRedirectStrategy() {
