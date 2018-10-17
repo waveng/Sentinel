@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.csp.sentinel.command.vo.NodeVo;
-import com.taobao.csp.sentinel.dashboard.client.spi.SentinelClientDataSource;
+import com.taobao.csp.sentinel.dashboard.client.datasource.SentinelClientDataSource;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.AuthorityRuleEntity;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.DegradeRuleEntity;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.FlowRuleEntity;

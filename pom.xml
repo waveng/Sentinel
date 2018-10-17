@@ -70,7 +70,7 @@
 
         <module>sentinel-demo</module>
         <module>sentinel-benchmark</module>
-        <module>sentinel-dashboard-client</module>
+        <module>sentinel-dashboard-support</module>
     </modules>
 
     <dependencyManagement>

@@ -9,6 +9,9 @@ import com.alibaba.csp.sentinel.concurrent.NamedThreadFactory;
 import com.alibaba.csp.sentinel.datasource.AbstractDataSource;
 import com.alibaba.csp.sentinel.datasource.Converter;
 import com.alibaba.csp.sentinel.log.RecordLog;
+import com.alibaba.csp.sentinel.transport.config.TransportConfig;
+import com.alibaba.csp.sentinel.util.AppNameUtil;
+import com.alibaba.csp.sentinel.util.HostNameUtil;
 import com.alibaba.csp.sentinel.util.StringUtil;
 
 import org.apache.curator.framework.CuratorFramework;
@@ -36,6 +39,7 @@ public class ZookeeperDataSource<T> extends AbstractDataSource<String, T> {
 
     private NodeCacheListener listener;
     private final String path;
+    private final String nodeType;
 
     private CuratorFramework zkClient = null;
     private NodeCache nodeCache = null;
@@ -46,6 +50,7 @@ public class ZookeeperDataSource<T> extends AbstractDataSource<String, T> {
             throw new IllegalArgumentException(String.format("Bad argument: serverAddr=[%s], path=[%s]", serverAddr, path));
         }
         this.path = path;
+        this.nodeType = null;
 
         init(serverAddr);
     }
@@ -60,7 +65,24 @@ public class ZookeeperDataSource<T> extends AbstractDataSource<String, T> {
             throw new IllegalArgumentException(String.format("Bad argument: serverAddr=[%s], groupId=[%s], dataId=[%s]", serverAddr, groupId, dataId));
         }
         this.path = getPath(groupId, dataId);
-
+        this.nodeType = null;
+        
+        init(serverAddr);
+    }
+    
+    /**
+     * @author waveng
+     * @param nodeType  sentinel-dashboard-datasource-zookeeper support
+     * 
+     */
+    public ZookeeperDataSource(final String serverAddr, final String groupId, final String dataId, final String nodeType,
+                               Converter<String, T> parser) {
+        super(parser);
+        if (StringUtil.isBlank(serverAddr) || StringUtil.isBlank(groupId) || StringUtil.isBlank(dataId)) {
+            throw new IllegalArgumentException(String.format("Bad argument: serverAddr=[%s], groupId=[%s], dataId=[%s]", serverAddr, groupId, dataId));
+        }
+        this.path = getPath(groupId, dataId);
+        this.nodeType = nodeType;
         init(serverAddr);
     }
 
@@ -111,12 +133,27 @@ public class ZookeeperDataSource<T> extends AbstractDataSource<String, T> {
             this.nodeCache = new NodeCache(this.zkClient, this.path);
             this.nodeCache.getListenable().addListener(this.listener, this.pool);
             this.nodeCache.start();
+            /**
+             * sentinel-dashboard-datasource-zookeeper support
+             * Record current dynamic rule storage path
+             */
+            if(StringUtil.isNotBlank(this.nodeType)){
+                String nodeTypePath = getNodeTypePath(this.nodeType);
+                if (this.zkClient.checkExists().forPath(nodeTypePath) == null) {
+                    this.zkClient.create().creatingParentContainersIfNeeded().withMode(CreateMode.PERSISTENT).forPath(nodeTypePath, this.path.getBytes());
+                }
+            }
+            
         } catch (Exception e) {
             RecordLog.warn("[ZookeeperDataSource] Error occurred when initializing Zookeeper data source", e);
             e.printStackTrace();
         }
     }
 
+    private String getNodeTypePath(String typePath) {
+        return "/" + AppNameUtil.getAppName() + "/" + HostNameUtil.getIp() +":"+ TransportConfig.getPort() + "/" + typePath;
+    }
+    
     @Override
     public String readSource() throws Exception {
         if (this.zkClient == null) {
