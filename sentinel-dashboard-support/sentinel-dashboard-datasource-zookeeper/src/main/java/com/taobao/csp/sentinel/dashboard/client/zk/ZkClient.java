@@ -23,7 +23,7 @@ public class ZkClient implements AutoCloseable{
     private static final int RETRY_TIMES = 3;
     private static final int SLEEP_TIME = 1000;
     
-    private static CuratorFramework zkClient = null;
+    private CuratorFramework zkClient = null;
     
     private boolean closed = false;
     
