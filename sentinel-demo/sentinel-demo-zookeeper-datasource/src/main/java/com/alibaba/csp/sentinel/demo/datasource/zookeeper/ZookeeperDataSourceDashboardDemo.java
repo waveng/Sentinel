@@ -14,7 +14,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 
 /**
- * Zookeeper ReadableDataSource Demo
+ * Zookeeper ReadableDataSource Demo， 
+ * sentinel-dashboard-datasource-zookeeper 支持
  *
  * @author guonanjun
  */

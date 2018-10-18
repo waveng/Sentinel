@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.taobao.csp.sentinel.dashboard.client.spi.SentinelClientDataSourceConfiguration
+com.taobao.csp.sentinel.dashboard.client.datasource.SentinelClientDataSourceAutoConfiguration

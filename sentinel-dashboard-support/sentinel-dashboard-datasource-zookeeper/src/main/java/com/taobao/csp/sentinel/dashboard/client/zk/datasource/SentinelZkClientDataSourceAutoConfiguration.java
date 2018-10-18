@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 
 import com.alibaba.csp.sentinel.datasource.Converter;
@@ -75,7 +76,7 @@ public class SentinelZkClientDataSourceAutoConfiguration {
             
         });
         
-        WritableDataSource<List<DegradeRuleEntity>> writable = new WritableDataSource<>(zk, NodeType.NODE_FLOW,
+        WritableDataSource<List<DegradeRuleEntity>> writable = new WritableDataSource<>(zk, NodeType.NODE_DEGRADE,
                 new Converter<List<DegradeRuleEntity>, byte[]>() {
                     
                     @Override
@@ -99,7 +100,7 @@ public class SentinelZkClientDataSourceAutoConfiguration {
             
         });
         
-        WritableDataSource<List<SystemRuleEntity>> writable = new WritableDataSource<>(zk, NodeType.NODE_FLOW,
+        WritableDataSource<List<SystemRuleEntity>> writable = new WritableDataSource<>(zk, NodeType.NODE_SYSTEM,
                 new Converter<List<SystemRuleEntity>, byte[]>() {
                     
                     @Override

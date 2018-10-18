@@ -152,8 +152,8 @@ public class ZookeeperDataSource<T> extends AbstractDataSource<String, T> {
         }
     }
 
-    private String getNodeTypePath(String typePath) {
-        return "/" + AppNameUtil.getAppName() + "/" + HostNameUtil.getIp() +":"+ TransportConfig.getPort() + "/" + typePath;
+    private String getNodeTypePath(String nodeType) {
+        return "/" + AppNameUtil.getAppName() + "/" + HostNameUtil.getIp() +":"+ TransportConfig.getPort() + "/" + nodeType;
     }
     
     @Override
