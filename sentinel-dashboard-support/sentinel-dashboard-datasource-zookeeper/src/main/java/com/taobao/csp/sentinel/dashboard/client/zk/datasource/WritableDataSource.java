@@ -1,6 +1,7 @@
 package com.taobao.csp.sentinel.dashboard.client.zk.datasource;
 
 import com.alibaba.csp.sentinel.datasource.Converter;
+import com.alibaba.csp.sentinel.datasource.zookeeper.NodeType;
 import com.taobao.csp.sentinel.dashboard.client.zk.AbstractWritable;
 import com.taobao.csp.sentinel.dashboard.client.zk.ZkClient;
 import com.taobao.csp.sentinel.dashboard.client.zk.util.Util;
@@ -15,9 +16,9 @@ public class WritableDataSource<T> extends AbstractWritable<T, byte[]> {
     private final String nodeType;
     private ZkClient zkClient;
     
-    public WritableDataSource(final ZkClient zkClient, final String nodeType, Converter<T, byte[]> parser) {
+    public WritableDataSource(final ZkClient zkClient, final NodeType nodeType, Converter<T, byte[]> parser) {
         super(parser);
-        this.nodeType = nodeType;
+        this.nodeType = nodeType.toString();
         this.zkClient = zkClient;
     }
     

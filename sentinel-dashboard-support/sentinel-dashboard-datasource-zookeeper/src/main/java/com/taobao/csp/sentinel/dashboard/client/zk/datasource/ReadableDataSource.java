@@ -1,6 +1,7 @@
 package com.taobao.csp.sentinel.dashboard.client.zk.datasource;
 
 import com.alibaba.csp.sentinel.datasource.Converter;
+import com.alibaba.csp.sentinel.datasource.zookeeper.NodeType;
 import com.taobao.csp.sentinel.dashboard.client.zk.AbstractReadable;
 import com.taobao.csp.sentinel.dashboard.client.zk.ZkClient;
 import com.taobao.csp.sentinel.dashboard.client.zk.util.Util;
@@ -17,9 +18,9 @@ public class ReadableDataSource<T> extends AbstractReadable<String, T> {
 
     private ZkClient zkClient = null;
 
-    public ReadableDataSource(final ZkClient zkClient,final String nodeType, Converter<String, T> parser) {
+    public ReadableDataSource(final ZkClient zkClient,final NodeType nodeType, Converter<String, T> parser) {
         super(parser);
-        this.nodeType = nodeType;
+        this.nodeType = nodeType.toString();
         this.zkClient = zkClient;
     }
 

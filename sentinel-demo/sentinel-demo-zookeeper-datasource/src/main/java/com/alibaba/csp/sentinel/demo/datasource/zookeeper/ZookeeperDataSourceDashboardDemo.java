@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.alibaba.csp.sentinel.datasource.ReadableDataSource;
+import com.alibaba.csp.sentinel.datasource.zookeeper.NodeType;
 import com.alibaba.csp.sentinel.datasource.zookeeper.ZookeeperDataSource;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
@@ -20,6 +21,7 @@ import com.alibaba.fastjson.TypeReference;
 public class ZookeeperDataSourceDashboardDemo {
 
     public static void main(String[] args) {
+        System.out.println(NodeType.NODE_DEGRADE);
         // 使用zookeeper的场景
         loadRules2();
         try {
@@ -42,24 +44,20 @@ public class ZookeeperDataSourceDashboardDemo {
         // final String systemDataId = "SYSTEM-CODE-DEMO-SYSTEM";
 
 
-        final String nodeTypeFlow = "node-flow";
-        final String nodeTypeDegrade = "node-degrade";
-        final String nodeTypeSystem = "node-system";
-
         TransportConfig.setRuntimePort(1234);
         
         // 规则会持久化到zk的/groupId/flowDataId节点
         // groupId和和flowDataId可以用/开头也可以不用
         // 建议不用以/开头，目的是为了如果从Zookeeper切换到Nacos的话，只需要改数据源类名就可以
-        ReadableDataSource<String, List<FlowRule>> flowRuleDataSource = new ZookeeperDataSource<>(remoteAddress, groupId, flowDataId,nodeTypeFlow,
+        ReadableDataSource<String, List<FlowRule>> flowRuleDataSource = new ZookeeperDataSource<>(remoteAddress, groupId, flowDataId,NodeType.NODE_FLOW,
                 source -> JSON.parseObject(source, new TypeReference<List<FlowRule>>() {}));
         FlowRuleManager.register2Property(flowRuleDataSource.getProperty());
 
-        // ReadableDataSource<String, List<DegradeRule>> degradeRuleDataSource = new ZookeeperDataSource<>(remoteAddress, groupId, degradeDataId, nodeTypeDegrade,
+//         ReadableDataSource<String, List<DegradeRule>> degradeRuleDataSource = new ZookeeperDataSource<>(remoteAddress, groupId, degradeDataId, NodeType.NODE_DEGRADE,
         //         source -> JSON.parseObject(source, new TypeReference<List<DegradeRule>>() {}));
         // DegradeRuleManager.register2Property(degradeRuleDataSource.getProperty());
         //
-        // ReadableDataSource<String, List<SystemRule>> systemRuleDataSource = new ZookeeperDataSource<>(remoteAddress, groupId, systemDataId, nodeTypeSystem,
+//         ReadableDataSource<String, List<SystemRule>> systemRuleDataSource = new ZookeeperDataSource<>(remoteAddress, groupId, systemDataId, NodeType.NODE_SYSTEM,
         //         source -> JSON.parseObject(source, new TypeReference<List<SystemRule>>() {}));
         // SystemRuleManager.register2Property(systemRuleDataSource.getProperty());
 

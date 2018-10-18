@@ -71,18 +71,20 @@ public class ZookeeperDataSource<T> extends AbstractDataSource<String, T> {
     }
     
     /**
+     * sentinel-dashboard-datasource-zookeeper support
      * @author waveng
-     * @param nodeType  sentinel-dashboard-datasource-zookeeper support
+     * @param nodeType  rule node type,
+     * @See {@link NodeType}
      * 
      */
-    public ZookeeperDataSource(final String serverAddr, final String groupId, final String dataId, final String nodeType,
+    public ZookeeperDataSource(final String serverAddr, final String groupId, final String dataId, final NodeType nodeType,
                                Converter<String, T> parser) {
         super(parser);
         if (StringUtil.isBlank(serverAddr) || StringUtil.isBlank(groupId) || StringUtil.isBlank(dataId)) {
             throw new IllegalArgumentException(String.format("Bad argument: serverAddr=[%s], groupId=[%s], dataId=[%s]", serverAddr, groupId, dataId));
         }
         this.path = getPath(groupId, dataId);
-        this.nodeType = nodeType;
+        this.nodeType = nodeType.toString();
         init(serverAddr);
     }
 

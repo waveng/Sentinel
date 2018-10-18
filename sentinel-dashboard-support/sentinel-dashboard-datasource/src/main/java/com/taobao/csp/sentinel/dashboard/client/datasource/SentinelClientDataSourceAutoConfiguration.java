@@ -13,7 +13,7 @@ import org.springframework.core.Ordered;
  */
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 @Configuration
-public class SentinelClientDataSourceConfiguration {
+public class SentinelClientDataSourceAutoConfiguration {
     
     @Bean
     @ConditionalOnMissingBean(SentinelClientDataSource.class)

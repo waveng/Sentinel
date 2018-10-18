@@ -12,13 +12,9 @@
       <zookeeper.version>3.4.13</zookeeper.version>
       <curator.version>4.0.1</curator.version>
       <curator.test.version>2.12.0</curator.test.version>
+      <spring.boot.version>2.0.5.RELEASE</spring.boot.version>
   </properties>
   <dependencies>
-  	<dependency>
-	    <groupId>junit</groupId>
-	    <artifactId>junit</artifactId>
-	    <scope>test</scope>
-  	</dependency>
   	<dependency>
   		<groupId>org.slf4j</groupId>
   		<artifactId>slf4j-api</artifactId>
@@ -27,13 +23,11 @@
   	<dependency>
   		<groupId>com.alibaba.csp</groupId>
   		<artifactId>sentinel-datasource-zookeeper</artifactId>
-  		<scope>test</scope>
   	</dependency>
   	<dependency>
          <groupId>com.alibaba.csp</groupId>
          <artifactId>sentinel-core</artifactId>
      </dependency>
-     
   	<dependency>
   		<groupId>com.alibaba.csp</groupId>
   		<artifactId>sentinel-datasource-extension</artifactId>
@@ -63,7 +57,12 @@
               </exclusion>
           </exclusions>
       </dependency>
-
+	  <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<version>${spring.boot.version}</version>
+			<scope>provided</scope>
+		</dependency>
       <dependency>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>

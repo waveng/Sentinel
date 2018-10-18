@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.alibaba.csp.sentinel.datasource.Converter;
+import com.alibaba.csp.sentinel.datasource.zookeeper.NodeType;
 import com.alibaba.csp.sentinel.datasource.zookeeper.ZookeeperDataSource;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
@@ -31,7 +32,6 @@ public class ReadableDataSourceTest {
         final String groupId = "Sentinel-Demo";
         final String flowDataId = "SYSTEM-CODE-DEMO-FLOW";
 
-        final String nodeTypeFlow = "node-flow";
 
         TransportConfig.setRuntimePort(1234);
 
@@ -39,7 +39,7 @@ public class ReadableDataSourceTest {
         // groupId和和flowDataId可以用/开头也可以不用
         // 建议不用以/开头，目的是为了如果从Zookeeper切换到Nacos的话，只需要改数据源类名就可以
         ZookeeperDataSource<List<FlowRule>> flowRuleDataSource = new ZookeeperDataSource<>(remoteAddress,
-                groupId, flowDataId, nodeTypeFlow, new Converter<String, List<FlowRule>>() {
+                groupId, flowDataId, NodeType.NODE_FLOW, new Converter<String, List<FlowRule>>() {
                     @Override
                     public List<FlowRule> convert(String source) {
                         return null;
@@ -50,9 +50,8 @@ public class ReadableDataSourceTest {
 
     @Test
     public void read() throws Exception {
-        final String nodeTypeFlow = "node-flow";
         ZkClient zk = new ZkClient(remoteAddress);
-        ReadableDataSource<List<FlowRuleEntity>> read = new ReadableDataSource<>(zk, nodeTypeFlow,
+        ReadableDataSource<List<FlowRuleEntity>> read = new ReadableDataSource<>(zk, NodeType.NODE_FLOW,
                 new Converter<String, List<FlowRuleEntity>>() {
                     @Override
                     public List<FlowRuleEntity> convert(String source) {
