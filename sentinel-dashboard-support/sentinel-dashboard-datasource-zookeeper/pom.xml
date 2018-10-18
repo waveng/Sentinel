@@ -16,11 +16,6 @@
   </properties>
   <dependencies>
   	<dependency>
-  		<groupId>org.slf4j</groupId>
-  		<artifactId>slf4j-api</artifactId>
-  		<version>1.7.25</version>
-  	</dependency>
-  	<dependency>
   		<groupId>com.alibaba.csp</groupId>
   		<artifactId>sentinel-datasource-zookeeper</artifactId>
   	</dependency>
@@ -83,7 +78,6 @@
       <dependency>
           <groupId>com.alibaba</groupId>
           <artifactId>fastjson</artifactId>
-          <scope>test</scope>
       </dependency>
   </dependencies>
 </project>
