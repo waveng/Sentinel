@@ -221,12 +221,11 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
 
     @Override
     public CompletableFuture<List<ParamFlowRuleEntity>> fetchParamFlowRulesOfMachine(String app, String ip, int port) {
-        CompletableFuture<List<ParamFlowRuleEntity>> future = null;
         if(readableParamFlowDataSource != null){
             try {
                 List<ParamFlowRule> rules = readableParamFlowDataSource.read(app, ip, port);
                 if(!(rules == null || rules.isEmpty())){
-                    future = new CompletableFuture<>();
+                    CompletableFuture<List<ParamFlowRuleEntity>> future = new CompletableFuture<>();
                     future.complete(rules.stream()
                             .map(e -> ParamFlowRuleEntity.fromAuthorityRule(app, ip, port, e))
                             .collect(Collectors.toList()));
