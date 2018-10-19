@@ -5,11 +5,11 @@
     <artifactId>sentinel-demo</artifactId>
     <version>0.2.1-SNAPSHOT</version>
   </parent>
-  <artifactId>dubbo-sentine-zookeeper-demo</artifactId>
+  <artifactId>sentine-demo-dubbo-zookeeper-demo</artifactId>
   <packaging>pom</packaging>
   <modules>
-  	<module>dubbo-sentine-zookeeper-provider</module>
-  	<module>dubbo-sentine-zookeeper-consumer</module>
-  	<module>dubbo-sentine-zookeeper-api</module>
+  	<module>sentine-demo-dubbo-zookeeper-provider</module>
+  	<module>sentine-demo-dubbo-zookeeper-consumer</module>
+  	<module>sentine-demo-dubbo-zookeeper-api</module>
   </modules>
 </project>

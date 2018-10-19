@@ -107,7 +107,7 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
             try {
                 data = readableFlowDataSource.read(app, ip, port);
             } catch (Exception e) {
-                logger.error("readable flow error !", e);
+                logger.warn("Reading flow rule error!", e);
             }
         }
         if(data == null || data.isEmpty()){
@@ -123,7 +123,7 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
             try {
                 data = readableDegradeDataSource.read(app, ip, port);
             } catch (Exception e) {
-                logger.error("readable degrade error !", e);
+                logger.warn("Reading degrade rule error!", e);
             }
         }
         if(data == null || data.isEmpty()){
@@ -139,7 +139,7 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
             try {
                 data = readableSystemDataSource.read(app, ip, port);
             } catch (Exception e) {
-                logger.error("readable degrade error !", e);
+                logger.warn("Reading system rule error!", e);
             }
         }
         if(data == null || data.isEmpty()){
@@ -161,7 +161,7 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
             try {
                 data = readableAuthorityDataSource.read(app, ip, port);
             } catch (Exception e) {
-                logger.error("readable degrade error !", e);
+                logger.warn("Reading authority rule error!", e);
             }
         }
         if(data == null || data.isEmpty()){
@@ -179,7 +179,7 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
             writableFlowDataSource.write(app, ip, port, rules);
             return true;
         } catch (Exception e) {
-            logger.error("write flow error!", e);
+            logger.warn("Write flow rule error!", e);
         }
         return false;
     }
@@ -193,7 +193,7 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
             writableDegradeDataSource.write(app, ip, port, rules);
             return true;
         } catch (Exception e) {
-            logger.error("write degradee error!", e);
+            logger.warn("Write degradee rule error!", e);
         }
         return false;
     }
@@ -207,7 +207,7 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
             writableSystemDataSource.write(app, ip, port, rules);
             return true;
         } catch (Exception e) {
-            logger.error("write degradee error!", e);
+            logger.warn("Write system rule error!", e);
         }
         return false;
     }

@@ -28,7 +28,7 @@
         <module>sentinel-demo-annotation-spring-aop</module>
         <module>sentinel-demo-parameter-flow-control</module>
         <module>sentinel-demo-slot-chain-spi</module>
-        <module>dubbo-sentine-zookeeper-demo</module>
+        <module>sentine-demo-dubbo-zookeeper-demo</module>
     </modules>
 
     <dependencies>

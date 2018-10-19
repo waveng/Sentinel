@@ -2,8 +2,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.alibaba.csp</groupId>
-    <artifactId>dubbo-sentine-zookeeper-demo</artifactId>
+    <artifactId>sentine-demo-dubbo-zookeeper-demo</artifactId>
     <version>0.2.1-SNAPSHOT</version>
   </parent>
-  <artifactId>dubbo-sentine-zookeeper-api</artifactId>
+  <artifactId>sentine-demo-dubbo-zookeeper-api</artifactId>
 </project>
