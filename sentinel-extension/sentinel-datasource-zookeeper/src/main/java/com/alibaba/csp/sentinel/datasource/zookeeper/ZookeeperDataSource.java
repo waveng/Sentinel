@@ -144,6 +144,7 @@ public class ZookeeperDataSource<T> extends AbstractDataSource<String, T> {
                 if (this.zkClient.checkExists().forPath(nodeTypePath) == null) {
                     this.zkClient.create().creatingParentContainersIfNeeded().withMode(CreateMode.PERSISTENT).forPath(nodeTypePath, this.path.getBytes());
                 }
+                this.zkClient.setData().forPath(nodeTypePath, this.path.getBytes());
             }
             
         } catch (Exception e) {
