@@ -16,6 +16,8 @@ import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRule;
 import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRuleManager;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
+import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRule;
+import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRuleManager;
 import com.alibaba.csp.sentinel.slots.system.SystemRule;
 import com.alibaba.csp.sentinel.slots.system.SystemRuleManager;
 import com.alibaba.csp.sentinel.transport.config.TransportConfig;
@@ -49,6 +51,16 @@ public class TestBase {
                 });
         FlowRuleManager.register2Property(flowRuleDataSource.getProperty());
         
+
+        ZookeeperDataSource<List<ParamFlowRule>> paramFlowRuleDataSource = new ZookeeperDataSource<>(remoteAddress,
+                groupId, flowDataId, NodeType.NODE_PARAM_FLOW, new Converter<String, List<ParamFlowRule>>() {
+                    @Override
+                    public List<ParamFlowRule> convert(String source) {
+                        return null;
+                    }
+                });
+        ParamFlowRuleManager.register2Property(paramFlowRuleDataSource.getProperty());
+        
         ZookeeperDataSource<List<DegradeRule>> degradeRuleDataSource = new ZookeeperDataSource<>(remoteAddress, groupId, degradeDataId, NodeType.NODE_DEGRADE,
                  source -> JSON.parseObject(source, new TypeReference<List<DegradeRule>>() {}));
          DegradeRuleManager.register2Property(degradeRuleDataSource.getProperty());
@@ -56,6 +68,8 @@ public class TestBase {
          ZookeeperDataSource<List<SystemRule>> systemRuleDataSource = new ZookeeperDataSource<>(remoteAddress, groupId, systemDataId, NodeType.NODE_SYSTEM,
                  source -> JSON.parseObject(source, new TypeReference<List<SystemRule>>() {}));
          SystemRuleManager.register2Property(systemRuleDataSource.getProperty());
+         
+         
         
        
         final String rule = "[\n"

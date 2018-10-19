@@ -458,7 +458,7 @@ public class SentinelApiClientDataSource implements SentinelClientDataSource {
         httpClient.close();
     }
 
-    private <R> CompletableFuture<R> newFailedFuture(Throwable ex) {
+    protected <R> CompletableFuture<R> newFailedFuture(Throwable ex) {
         CompletableFuture<R> future = new CompletableFuture<>();
         future.completeExceptionally(ex);
         return future;
