@@ -2,19 +2,31 @@ package com.taobao.csp.sentinel.dashboard.client.zk.datasource;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.csp.sentinel.command.vo.NodeVo;
+import com.alibaba.csp.sentinel.datasource.Converter;
+import com.alibaba.csp.sentinel.datasource.zookeeper.NodeType;
+import com.alibaba.csp.sentinel.slots.block.authority.AuthorityRule;
+import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRule;
+import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
+import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRule;
+import com.alibaba.csp.sentinel.slots.system.SystemRule;
+import com.alibaba.fastjson.JSON;
 import com.taobao.csp.sentinel.dashboard.client.datasource.SentinelApiClientDataSource;
-import com.taobao.csp.sentinel.dashboard.client.zk.Writable;
 import com.taobao.csp.sentinel.dashboard.client.zk.Readable;
+import com.taobao.csp.sentinel.dashboard.client.zk.Writable;
+import com.taobao.csp.sentinel.dashboard.client.zk.ZkClient;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.AuthorityRuleEntity;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.DegradeRuleEntity;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.FlowRuleEntity;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.ParamFlowRuleEntity;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.SystemRuleEntity;
+import com.taobao.csp.sentinel.dashboard.util.RuleUtils;
+
 
 /**
  * 
@@ -25,14 +37,16 @@ import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.SystemRuleEntity
 public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
     private static Logger logger = LoggerFactory.getLogger(SentinelZkClientDataSource.class);
     
-    private Readable<String, List<FlowRuleEntity>> readableFlowDataSource;
-    private Readable<String, List<DegradeRuleEntity>> readableDegradeDataSource;
-    private Readable<String, List<SystemRuleEntity>> readableSystemDataSource;
-    private Readable<String, List<AuthorityRuleEntity>> readableAuthorityDataSource;
+    private Readable<String, List<FlowRule>> readableFlowDataSource;
+    private Readable<String, List<DegradeRule>> readableDegradeDataSource;
+    private Readable<String, List<SystemRule>> readableSystemDataSource;
+    private Readable<String, List<AuthorityRule>> readableAuthorityDataSource;
+    private Readable<String, List<ParamFlowRule>> readableParamFlowDataSource;
     
     private Writable<List<FlowRuleEntity>> writableFlowDataSource;
     private Writable<List<DegradeRuleEntity>> writableDegradeDataSource;
     private Writable<List<SystemRuleEntity>> writableSystemDataSource;
+    private Writable<List<ParamFlowRuleEntity>> writableParamFlowDataSource;
     
     public SentinelZkClientDataSource() {
         super();
@@ -41,53 +55,109 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
     
     
 
-    public void setReadableFlowDataSource(Readable<String, List<FlowRuleEntity>> readableFlowDataSource) {
-        this.readableFlowDataSource = readableFlowDataSource;
+    public void initFlow(ZkClient zk) {
+        this.readableFlowDataSource = new ReadableDataSource<>(zk, NodeType.NODE_FLOW,
+                new Converter<String, List<FlowRule>>() {
+            @Override
+            public List<FlowRule> convert(String source) {
+                return RuleUtils.parseFlowRule(source);
+            }
+            
+        });
+        
+        this.writableFlowDataSource = new WritableDataSource<>(zk, NodeType.NODE_FLOW,
+                new Converter<List<FlowRuleEntity>, byte[]>() {
+                    
+                    @Override
+                    public byte[] convert(List<FlowRuleEntity> source) {
+                        return JSON.toJSONBytes(source.stream().map(FlowRuleEntity::toFlowRule).collect(Collectors.toList()));
+                    }
+                    
+                });;
     }
 
 
 
 
-    public void setReadableDegradeDataSource(Readable<String, List<DegradeRuleEntity>> readableDegradeDataSource) {
-        this.readableDegradeDataSource = readableDegradeDataSource;
+    public void initDegrade(ZkClient zk) {
+        this.readableDegradeDataSource = new ReadableDataSource<>(zk, NodeType.NODE_DEGRADE,
+                new Converter<String, List<DegradeRule>>() {
+            @Override
+            public List<DegradeRule> convert(String source) {
+                return RuleUtils.parseDegradeRule(source);
+            }
+            
+        });
+        this.writableDegradeDataSource = new WritableDataSource<>(zk, NodeType.NODE_DEGRADE,
+                new Converter<List<DegradeRuleEntity>, byte[]>() {
+                    
+                    @Override
+                    public byte[] convert(List<DegradeRuleEntity> source) {
+                        return JSON.toJSONBytes(source.stream().map(DegradeRuleEntity::toDegradeRule).collect(Collectors.toList()));
+                    }
+                    
+                });
+        
     }
 
 
 
 
-    public void setReadableSystemDataSource(Readable<String, List<SystemRuleEntity>> readableSystemDataSource) {
-        this.readableSystemDataSource = readableSystemDataSource;
+    public void initSystem(ZkClient zk) {
+        this.readableSystemDataSource = new ReadableDataSource<>(zk, NodeType.NODE_SYSTEM,
+                new Converter<String, List<SystemRule>>() {
+            @Override
+            public List<SystemRule> convert(String source) {
+                return RuleUtils.parseSystemRule(source);
+            }
+            
+        });
+        
+        this.writableSystemDataSource =  new WritableDataSource<>(zk, NodeType.NODE_SYSTEM,
+                new Converter<List<SystemRuleEntity>, byte[]>() {
+                    
+                    @Override
+                    public byte[] convert(List<SystemRuleEntity> source) {
+                        return JSON.toJSONBytes(source.stream().map(SystemRuleEntity::toSystemRule).collect(Collectors.toList()));
+                    }
+                    
+                });
     }
 
 
 
 
-    public void setReadableAuthorityDataSource(Readable<String, List<AuthorityRuleEntity>> readableAuthorityDataSource) {
-        this.readableAuthorityDataSource = readableAuthorityDataSource;
+    public void initAuthority(ZkClient zk) {
+        this.readableAuthorityDataSource  = new ReadableDataSource<>(zk, NodeType.NODE_AUTHORITY,
+                new Converter<String, List<AuthorityRule>>() {
+            @Override
+            public List<AuthorityRule> convert(String source) {
+                return RuleUtils.parseAuthorityRule(source);
+            }
+            
+        });
     }
-
-
-
-
-    public void setWritableFlowDataSource(Writable<List<FlowRuleEntity>> writableFlowDataSource) {
-        this.writableFlowDataSource = writableFlowDataSource;
+    
+    public void initParamFlow(ZkClient zk) {
+        this.readableParamFlowDataSource  = new ReadableDataSource<>(zk, NodeType.NODE_PARAM_FLOW,
+                new Converter<String, List<ParamFlowRule>>() {
+            @Override
+            public List<ParamFlowRule> convert(String source) {
+                return RuleUtils.parseParamFlowRule(source);
+            }
+            
+        });
+        
+        this.writableParamFlowDataSource =  new WritableDataSource<>(zk, NodeType.NODE_PARAM_FLOW,
+                new Converter<List<ParamFlowRuleEntity>, byte[]>() {
+                        
+                    @Override
+                    public byte[] convert(List<ParamFlowRuleEntity> source) {
+                        return JSON.toJSONBytes(source.stream().map(ParamFlowRuleEntity::getRule).collect(Collectors.toList()));
+                    }
+                    
+                });
     }
-
-
-
-
-    public void setWritableDegradeDataSource(Writable<List<DegradeRuleEntity>> writableDegradeDataSource) {
-        this.writableDegradeDataSource = writableDegradeDataSource;
-    }
-
-
-
-
-    public void setWritableSystemDataSource(Writable<List<SystemRuleEntity>> writableSystemDataSource) {
-        this.writableSystemDataSource = writableSystemDataSource;
-    }
-
-
 
 
     @Override
@@ -100,57 +170,74 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
         return super.fetchClusterNodeOfMachine(ip, port, includeZero);
     }
 
+
     @Override
     public List<FlowRuleEntity> fetchFlowRuleOfMachine(String app, String ip, int port) {
-        List<FlowRuleEntity> data = null;
         if(readableFlowDataSource != null){
             try {
-                data = readableFlowDataSource.read(app, ip, port);
+                List<FlowRule> rules = readableFlowDataSource.read(app, ip, port);
+                if(!(rules == null || rules.isEmpty())){
+                    return rules.stream().map(rule -> FlowRuleEntity.fromFlowRule(app, ip, port, rule))
+                        .collect(Collectors.toList());
+                }
             } catch (Exception e) {
                 logger.warn("Reading flow rule error!", e);
             }
         }
-        if(data == null || data.isEmpty()){
-            data = super.fetchFlowRuleOfMachine(app, ip, port);
-        }
-        return data;
+        return super.fetchFlowRuleOfMachine(app, ip, port);
     }
 
     @Override
     public List<DegradeRuleEntity> fetchDegradeRuleOfMachine(String app, String ip, int port) {
-        List<DegradeRuleEntity> data = null;
         if(readableDegradeDataSource != null){
             try {
-                data = readableDegradeDataSource.read(app, ip, port);
+                List<DegradeRule> rules =  readableDegradeDataSource.read(app, ip, port);
+                if(!(rules == null || rules.isEmpty())){
+                    return rules.stream().map(rule -> DegradeRuleEntity.fromDegradeRule(app, ip, port, rule))
+                        .collect(Collectors.toList());
+                }
             } catch (Exception e) {
                 logger.warn("Reading degrade rule error!", e);
             }
         }
-        if(data == null || data.isEmpty()){
-            data = super.fetchDegradeRuleOfMachine(app, ip, port);
-        }
-        return data;
+        return super.fetchDegradeRuleOfMachine(app, ip, port);
     }
 
     @Override
     public List<SystemRuleEntity> fetchSystemRuleOfMachine(String app, String ip, int port) {
-        List<SystemRuleEntity> data = null;
         if(readableSystemDataSource != null){
             try {
-                data = readableSystemDataSource.read(app, ip, port);
+                List<SystemRule> rules = readableSystemDataSource.read(app, ip, port);
+                if(!(rules == null || rules.isEmpty())){
+                    return rules.stream().map(rule -> SystemRuleEntity.fromSystemRule(app, ip, port, rule))
+                        .collect(Collectors.toList());
+                }
             } catch (Exception e) {
                 logger.warn("Reading system rule error!", e);
             }
         }
-        if(data == null || data.isEmpty()){
-            data = super.fetchSystemRuleOfMachine(app, ip, port);
-        }
-        return data;
+        return super.fetchSystemRuleOfMachine(app, ip, port);
     }
 
     @Override
     public CompletableFuture<List<ParamFlowRuleEntity>> fetchParamFlowRulesOfMachine(String app, String ip, int port) {
-        
+        if(readableParamFlowDataSource != null){
+            try {
+                List<ParamFlowRule> rules = readableParamFlowDataSource.read(app, ip, port);
+                if(!(rules == null || rules.isEmpty())){
+                    CompletableFuture<List<ParamFlowRuleEntity>> future = new CompletableFuture<>();
+                    future.complete(rules.stream()
+                            .map(e -> ParamFlowRuleEntity.fromAuthorityRule(app, ip, port, e))
+                            .collect(Collectors.toList()));
+                    
+                    return future;
+                }
+                
+            } catch (Exception e) {
+                logger.warn("Reading param flow rule error!", e);
+            }
+            
+        }
         return super.fetchParamFlowRulesOfMachine(app, ip, port);
     }
 
@@ -159,7 +246,11 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
         List<AuthorityRuleEntity> data = null;
         if(readableAuthorityDataSource != null){
             try {
-                data = readableAuthorityDataSource.read(app, ip, port);
+                List<AuthorityRule> rules = readableAuthorityDataSource.read(app, ip, port);
+                if(!(rules == null || rules.isEmpty())){
+                    return rules.stream().map(rule -> AuthorityRuleEntity.fromAuthorityRule(app, ip, port, rule))
+                        .collect(Collectors.toList());
+                }
             } catch (Exception e) {
                 logger.warn("Reading authority rule error!", e);
             }
@@ -214,6 +305,16 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
 
     @Override
     public CompletableFuture<Void> setParamFlowRuleOfMachine(String app, String ip, int port, List<ParamFlowRuleEntity> rules) {
-        return super.setParamFlowRuleOfMachine(app, ip, port, rules);
+        if(writableParamFlowDataSource == null){
+            return super.setParamFlowRuleOfMachine(app, ip, port, rules);
+        }
+        
+        try {
+            writableParamFlowDataSource.write(app, ip, port, rules);
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            logger.warn("Error when setting parameter flow rule", e);
+            return newFailedFuture(e);
+        }
     }
 }

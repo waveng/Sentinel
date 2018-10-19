@@ -4,18 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-import com.alibaba.csp.sentinel.datasource.Converter;
-import com.alibaba.csp.sentinel.datasource.zookeeper.NodeType;
-import com.alibaba.csp.sentinel.datasource.zookeeper.ZookeeperDataSource;
-import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
-import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
-import com.alibaba.csp.sentinel.transport.config.TransportConfig;
 import com.alibaba.csp.sentinel.util.HostNameUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
 import com.taobao.csp.sentinel.dashboard.client.zk.TestBase;
 import com.taobao.csp.sentinel.dashboard.client.zk.ZkClient;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.FlowRuleEntity;
@@ -31,29 +23,10 @@ public class SentinelZkClientDataSourceTest extends TestBase {
     public void test() {
 
         ZkClient zk = new ZkClient(remoteAddress);
-        ReadableDataSource<List<FlowRuleEntity>> readableFlow = new ReadableDataSource<>(zk, NodeType.NODE_FLOW,
-                new Converter<String, List<FlowRuleEntity>>() {
-                    @Override
-                    public List<FlowRuleEntity> convert(String source) {
-                        return JSON.parseObject(source, new TypeReference<List<FlowRuleEntity>>() {
-                        });
-                    }
-
-                });
-
-        WritableDataSource<List<FlowRuleEntity>> writableFlow = new WritableDataSource<>(zk, NodeType.NODE_FLOW,
-                new Converter<List<FlowRuleEntity>, byte[]>() {
-
-                    @Override
-                    public byte[] convert(List<FlowRuleEntity> source) {
-                        return JSON.toJSONBytes(source);
-                    }
-
-                });
 
         SentinelZkClientDataSource source = new SentinelZkClientDataSource();
-        source.setWritableFlowDataSource(writableFlow);
-        source.setReadableFlowDataSource(readableFlow);
+        source.initFlow(zk);
+        source.initFlow(zk);
 
         FlowRuleEntity fule = new FlowRuleEntity();
         fule.setApp(appname);

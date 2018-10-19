@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.csp.sentinel.command.vo.NodeVo;
+import com.alibaba.csp.sentinel.util.AssertUtil;
+import com.alibaba.csp.sentinel.util.StringUtil;
 import com.taobao.csp.sentinel.dashboard.client.datasource.SentinelClientDataSource;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.AuthorityRuleEntity;
 import com.taobao.csp.sentinel.dashboard.datasource.entity.rule.DegradeRuleEntity;
@@ -67,6 +69,7 @@ public class SentinelApiClient {
     }
 
     public List<SystemRuleEntity> fetchSystemRuleOfMachine(String app, String ip, int port) {
+        
         return sentinelClientDataSource.fetchSystemRuleOfMachine(app, ip, port);
     }
 
@@ -80,6 +83,13 @@ public class SentinelApiClient {
      * @since 0.2.1
      */
     public CompletableFuture<List<ParamFlowRuleEntity>> fetchParamFlowRulesOfMachine(String app, String ip, int port) {
+        try {
+            AssertUtil.notEmpty(app, "Bad app name");
+            AssertUtil.notEmpty(ip, "Bad machine IP");
+            AssertUtil.isTrue(port > 0, "Bad machine port");
+        } catch (Exception e) {
+            return newFailedFuture(e);
+        }
         return sentinelClientDataSource.fetchParamFlowRulesOfMachine(app, ip, port);
     }
 
@@ -93,6 +103,9 @@ public class SentinelApiClient {
      * @since 0.2.1
      */
     public List<AuthorityRuleEntity> fetchAuthorityRulesOfMachine(String app, String ip, int port) {
+        AssertUtil.notEmpty(app, "Bad app name");
+        AssertUtil.notEmpty(ip, "Bad machine IP");
+        AssertUtil.isTrue(port > 0, "Bad machine port");
         return sentinelClientDataSource.fetchAuthorityRulesOfMachine(app, ip, port);
     }
 
@@ -107,6 +120,12 @@ public class SentinelApiClient {
      * @return whether successfully set the rules.
      */
     public boolean setFlowRuleOfMachine(String app, String ip, int port, List<FlowRuleEntity> rules) {
+        if (rules == null) {
+            return true;
+        }
+        if (ip == null) {
+            throw new IllegalArgumentException("ip is null");
+        }
         return sentinelClientDataSource.setFlowRuleOfMachine(app, ip, port, rules);
     }
 
@@ -121,6 +140,12 @@ public class SentinelApiClient {
      * @return whether successfully set the rules.
      */
     public boolean setDegradeRuleOfMachine(String app, String ip, int port, List<DegradeRuleEntity> rules) {
+        if (rules == null) {
+            return true;
+        }
+        if (ip == null) {
+            throw new IllegalArgumentException("ip is null");
+        }
         return sentinelClientDataSource.setDegradeRuleOfMachine(app, ip, port, rules);
     }
 
@@ -135,12 +160,28 @@ public class SentinelApiClient {
      * @return whether successfully set the rules.
      */
     public boolean setSystemRuleOfMachine(String app, String ip, int port, List<SystemRuleEntity> rules) {
+        if (rules == null) {
+            return true;
+        }
+        if (ip == null) {
+            throw new IllegalArgumentException("ip is null");
+        }
         return sentinelClientDataSource.setSystemRuleOfMachine(app, ip, port, rules);
     }
 
     public CompletableFuture<Void> setParamFlowRuleOfMachine(String app, String ip, int port, List<ParamFlowRuleEntity> rules) {
+        if (rules == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        if (StringUtil.isBlank(ip) || port <= 0) {
+            return newFailedFuture(new IllegalArgumentException("Invalid parameter"));
+        }
         return sentinelClientDataSource.setParamFlowRuleOfMachine(app, ip, port, rules);
     }
 
-   
+    protected <R> CompletableFuture<R> newFailedFuture(Throwable ex) {
+        CompletableFuture<R> future = new CompletableFuture<>();
+        future.completeExceptionally(ex);
+        return future;
+    }
 }

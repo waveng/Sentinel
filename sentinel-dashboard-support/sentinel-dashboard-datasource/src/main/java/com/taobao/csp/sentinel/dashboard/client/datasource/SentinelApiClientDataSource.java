@@ -186,9 +186,6 @@ public class SentinelApiClientDataSource implements SentinelClientDataSource {
      */
     public CompletableFuture<List<ParamFlowRuleEntity>> fetchParamFlowRulesOfMachine(String app, String ip, int port) {
         try {
-            AssertUtil.notEmpty(app, "Bad app name");
-            AssertUtil.notEmpty(ip, "Bad machine IP");
-            AssertUtil.isTrue(port > 0, "Bad machine port");
             URIBuilder uriBuilder = new URIBuilder();
             String commandName = GET_PARAM_RULE_PATH;
             uriBuilder.setScheme("http").setHost(ip).setPort(port)
@@ -215,9 +212,6 @@ public class SentinelApiClientDataSource implements SentinelClientDataSource {
      * @since 0.2.1
      */
     public List<AuthorityRuleEntity> fetchAuthorityRulesOfMachine(String app, String ip, int port) {
-        AssertUtil.notEmpty(app, "Bad app name");
-        AssertUtil.notEmpty(ip, "Bad machine IP");
-        AssertUtil.isTrue(port > 0, "Bad machine port");
         URIBuilder uriBuilder = new URIBuilder();
         uriBuilder.setScheme("http").setHost(ip).setPort(port)
             .setPath(GET_RULES_PATH)
@@ -248,12 +242,6 @@ public class SentinelApiClientDataSource implements SentinelClientDataSource {
      * @return whether successfully set the rules.
      */
     public boolean setFlowRuleOfMachine(String app, String ip, int port, List<FlowRuleEntity> rules) {
-        if (rules == null) {
-            return true;
-        }
-        if (ip == null) {
-            throw new IllegalArgumentException("ip is null");
-        }
         String data = JSON.toJSONString(rules.stream().map(FlowRuleEntity::toFlowRule).collect(Collectors.toList()));
         try {
             data = URLEncoder.encode(data, DEFAULT_CHARSET.name());
@@ -278,12 +266,6 @@ public class SentinelApiClientDataSource implements SentinelClientDataSource {
      * @return whether successfully set the rules.
      */
     public boolean setDegradeRuleOfMachine(String app, String ip, int port, List<DegradeRuleEntity> rules) {
-        if (rules == null) {
-            return true;
-        }
-        if (ip == null) {
-            throw new IllegalArgumentException("ip is null");
-        }
         String data = JSON.toJSONString(
             rules.stream().map(DegradeRuleEntity::toDegradeRule).collect(Collectors.toList()));
         try {
@@ -310,12 +292,6 @@ public class SentinelApiClientDataSource implements SentinelClientDataSource {
      * @return whether successfully set the rules.
      */
     public boolean setSystemRuleOfMachine(String app, String ip, int port, List<SystemRuleEntity> rules) {
-        if (rules == null) {
-            return true;
-        }
-        if (ip == null) {
-            throw new IllegalArgumentException("ip is null");
-        }
         String data = JSON.toJSONString(
             rules.stream().map(SystemRuleEntity::toSystemRule).collect(Collectors.toList()));
         try {
@@ -331,12 +307,6 @@ public class SentinelApiClientDataSource implements SentinelClientDataSource {
     }
 
     public CompletableFuture<Void> setParamFlowRuleOfMachine(String app, String ip, int port, List<ParamFlowRuleEntity> rules) {
-        if (rules == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-        if (StringUtil.isBlank(ip) || port <= 0) {
-            return newFailedFuture(new IllegalArgumentException("Invalid parameter"));
-        }
         try {
             String data = JSON.toJSONString(
                 rules.stream().map(ParamFlowRuleEntity::getRule).collect(Collectors.toList())
@@ -458,7 +428,7 @@ public class SentinelApiClientDataSource implements SentinelClientDataSource {
         httpClient.close();
     }
 
-    private <R> CompletableFuture<R> newFailedFuture(Throwable ex) {
+    protected <R> CompletableFuture<R> newFailedFuture(Throwable ex) {
         CompletableFuture<R> future = new CompletableFuture<>();
         future.completeExceptionally(ex);
         return future;
