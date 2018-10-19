@@ -12,6 +12,8 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.csp.sentinel.datasource.zookeeper.ZookeeperDataSource;
+
 
 /**
  * @author waveng
@@ -38,6 +40,7 @@ public class ZkClient implements AutoCloseable{
             CuratorFramework  client = CuratorFrameworkFactory.builder().
             connectString(serverAddr).
             retryPolicy(new ExponentialBackoffRetry(SLEEP_TIME, RETRY_TIMES)).
+            namespace(ZookeeperDataSource.NAMESPACE).
             build();
             
             client.start();
