@@ -29,7 +29,8 @@ import org.apache.zookeeper.data.Stat;
  * @author guonanjun
  */
 public class ZookeeperDataSource<T> extends AbstractDataSource<String, T> {
-
+    
+    public static final String NAMESPACE = "sentinel";
     private static final int RETRY_TIMES = 3;
     private static final int SLEEP_TIME = 1000;
 
@@ -124,8 +125,14 @@ public class ZookeeperDataSource<T> extends AbstractDataSource<String, T> {
                     getProperty().updateValue(newValue);
                 }
             };
-
-            this.zkClient = CuratorFrameworkFactory.newClient(serverAddr, new ExponentialBackoffRetry(SLEEP_TIME, RETRY_TIMES));
+            /**
+             * add namespace, Easy to manage nodes
+             */
+            this.zkClient =  CuratorFrameworkFactory.builder().
+                    connectString(serverAddr).
+                    retryPolicy(new ExponentialBackoffRetry(SLEEP_TIME, RETRY_TIMES)).
+                    namespace(NAMESPACE).
+                    build(); 
             this.zkClient.start();
             Stat stat = this.zkClient.checkExists().forPath(this.path);
             if (stat == null) {
