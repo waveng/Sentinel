@@ -46,6 +46,7 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
     private Writable<List<FlowRuleEntity>> writableFlowDataSource;
     private Writable<List<DegradeRuleEntity>> writableDegradeDataSource;
     private Writable<List<SystemRuleEntity>> writableSystemDataSource;
+    private Writable<List<AuthorityRuleEntity>> writableAuthorityDataSource;
     private Writable<List<ParamFlowRuleEntity>> writableParamFlowDataSource;
     
     public SentinelZkClientDataSource() {
@@ -136,6 +137,16 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
             }
             
         });
+        
+        this.writableAuthorityDataSource =  new WritableDataSource<>(zk, NodeType.NODE_AUTHORITY,
+                new Converter<List<AuthorityRuleEntity>, byte[]>() {
+                        
+                    @Override
+                    public byte[] convert(List<AuthorityRuleEntity> source) {
+                        return JSON.toJSONBytes(source.stream().map(AuthorityRuleEntity::getRule).collect(Collectors.toList()));
+                    }
+                    
+                });
     }
     
     public void initParamFlow(ZkClient zk) {
@@ -316,5 +327,20 @@ public class SentinelZkClientDataSource extends SentinelApiClientDataSource{
             logger.warn("Error when setting parameter flow rule", e);
             return newFailedFuture(e);
         }
+    }
+    @Override
+    public boolean setAuthorityRuleOfMachine(String app, String ip, int port, List<AuthorityRuleEntity> rules) {
+        if(writableAuthorityDataSource == null){
+            return super.setAuthorityRuleOfMachine(app, ip, port, rules);
+        }
+        
+        try {
+            writableAuthorityDataSource.write(app, ip, port, rules);
+            return true;
+        } catch (Exception e) {
+            logger.warn("Error when setting authority rule", e);
+        }
+        return false;
+        
     }
 }

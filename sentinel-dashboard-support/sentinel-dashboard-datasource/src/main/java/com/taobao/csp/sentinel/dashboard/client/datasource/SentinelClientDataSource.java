@@ -94,4 +94,6 @@ public interface SentinelClientDataSource {
     public boolean setSystemRuleOfMachine(String app, String ip, int port, List<SystemRuleEntity> rules) ;
 
     public CompletableFuture<Void> setParamFlowRuleOfMachine(String app, String ip, int port, List<ParamFlowRuleEntity> rules);
+    
+    public boolean setAuthorityRuleOfMachine(String app, String ip, int port, List<AuthorityRuleEntity> rules);
 }

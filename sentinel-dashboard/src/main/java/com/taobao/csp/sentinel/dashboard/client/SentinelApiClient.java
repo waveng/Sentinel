@@ -169,6 +169,16 @@ public class SentinelApiClient {
         return sentinelClientDataSource.setSystemRuleOfMachine(app, ip, port, rules);
     }
 
+    public boolean setAuthorityRuleOfMachine(String app, String ip, int port, List<AuthorityRuleEntity> rules) {
+        if (rules == null) {
+            return true;
+        }
+        if (StringUtil.isBlank(ip) || port <= 0) {
+            throw new IllegalArgumentException("Invalid IP or port");
+        }
+        return sentinelClientDataSource.setAuthorityRuleOfMachine(app, ip, port, rules);
+    }
+
     public CompletableFuture<Void> setParamFlowRuleOfMachine(String app, String ip, int port, List<ParamFlowRuleEntity> rules) {
         if (rules == null) {
             return CompletableFuture.completedFuture(null);

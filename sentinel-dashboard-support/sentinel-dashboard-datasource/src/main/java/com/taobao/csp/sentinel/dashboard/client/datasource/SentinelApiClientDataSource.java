@@ -46,7 +46,6 @@ import com.alibaba.csp.sentinel.config.SentinelConfig;
 import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRule;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
 import com.alibaba.csp.sentinel.slots.system.SystemRule;
-import com.alibaba.csp.sentinel.util.AssertUtil;
 import com.alibaba.csp.sentinel.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.taobao.csp.sentinel.dashboard.client.CommandNotFoundException;
@@ -432,6 +431,22 @@ public class SentinelApiClientDataSource implements SentinelClientDataSource {
         CompletableFuture<R> future = new CompletableFuture<>();
         future.completeExceptionally(ex);
         return future;
+    }
+
+    @Override
+    public boolean setAuthorityRuleOfMachine(String app, String ip, int port, List<AuthorityRuleEntity> rules) {
+        String data = JSON.toJSONString(
+            rules.stream().map(AuthorityRuleEntity::getRule).collect(Collectors.toList()));
+        try {
+            data = URLEncoder.encode(data, DEFAULT_CHARSET.name());
+        } catch (UnsupportedEncodingException e) {
+            logger.info("Encode rule error", e);
+            return false;
+        }
+        String url = "http://" + ip + ":" + port + "/" + SET_RULES_PATH + "?type=" + AUTHORITY_TYPE + "&data=" + data;
+        String result = httpGetContent(url);
+        logger.info("Push authority rules: " + result);
+        return true;
     }
 
 }
