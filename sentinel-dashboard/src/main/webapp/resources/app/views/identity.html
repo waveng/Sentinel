@@ -54,7 +54,7 @@
               <tbody>
                 <tr dir-paginate="resource in identities | itemsPerPage: pageSize" current-page="currentPage" pagination-id="entriesPagination"
                   data-tt-id="{{resource.ttId}}" data-tt-parent-id="{{resource.parentTtId}}" data-tt-visible="{{resource.visible}}">
-                  <td style="white-space: normal; text-align: left;">
+                  <td style="white-space: normal; text-align: left;overflow: hidden;text-overflow: ellipsis;" ng-attr-title="{{resource.resource}}">
                     <!--<a ng-click="copyIdentity(resource.resource)"-->
                     <!--title="{{resource.resource}} 单击复制到剪切板">-->
                     {{resource.resource}}
