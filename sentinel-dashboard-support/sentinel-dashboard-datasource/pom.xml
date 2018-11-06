@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.alibaba.csp</groupId>
 		<artifactId>sentinel-dashboard-support</artifactId>
-		<version>0.2.1-SNAPSHOT</version>
+		<version>1.3.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>sentinel-dashboard-datasource</artifactId>
 	<properties>
